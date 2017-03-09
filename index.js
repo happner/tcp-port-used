@@ -118,7 +118,7 @@ function check(port, host) {
     client = new net.Socket();
     client.once('connect', onConnectCb);
     client.once('error', onErrorCb);
-    client.connect({port: opts.port, host: opts.host});
+    client.connect({port: opts.port, host: opts.host}, function(){});
 
     return deferred.promise;
 }
