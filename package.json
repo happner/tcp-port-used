@@ -1,10 +1,10 @@
 {
     "name": "happn-tcp-port-used",
-    "version": "0.1.3",
+    "version": "1.0.2",
     "description": "A simple Node.js module to check if a TCP port is already bound.",
     "main": "index.js",
     "scripts": {
-        "test" : "./node_modules/.bin/mocha --reporter=list ./test.js"
+        "test": "./node_modules/.bin/mocha --reporter=list ./test.js"
     },
     "repository": {
         "type": "git",
@@ -25,11 +25,10 @@
     },
     "homepage": "https://github.com/happner/tcp-port-used",
     "dependencies": {
-        "debug": "0.7.4",
-        "is2": "0.0.9",
-        "q": "0.9.7"
+        "debug": "4.1.0",
+        "is2": "2.0.1"
     },
     "devDependencies": {
-        "mocha": "1.15.0"
+        "mocha": "^5.2.0"
     }
 }

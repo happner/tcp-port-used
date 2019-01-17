@@ -13,7 +13,6 @@ exports.waitUntilUsed = waitUntilUsed;
 exports.waitForStatus = waitForStatus;
 
 var is = require('is2');
-var Q = require('q');
 var net = require('net');
 var util = require('util');
 var debug = require('debug')('tcp-port-used');
@@ -21,6 +20,19 @@ var debug = require('debug')('tcp-port-used');
 // Global Values
 var TIMEOUT = 2000;
 var RETRYTIME = 250;
+
+function getDeferred() {
+    var resolve, reject, promise = new Promise(function(res, rej) {
+        resolve = res;
+        reject = rej;
+    });
+
+    return {
+        resolve: resolve,
+        reject: reject,
+        promise: promise
+    };
+}
 
 /**
  * Creates an options object from all the possible arguments
@@ -63,7 +75,7 @@ function makeOptionsObj(port, host, inUse, retryTimeMs, timeOutMs) {
  */
 function check(port, host) {
 
-    var deferred = Q.defer();
+    var deferred = getDeferred();
     var inUse = true;
     var client;
 
@@ -103,16 +115,18 @@ function check(port, host) {
     }
 
     function onErrorCb(err) {
-        if (err.code !== 'ECONNREFUSED') {
-            //debug('check - promise rejected, error: '+err.message);
-            deferred.reject(err);
-        } else {
-            //debug('ECONNREFUSED');
-            inUse = false;
-            //debug('check - promise resolved - not in use');
-            deferred.resolve(inUse);
-        }
-        cleanUp();
+      if (err.code === 'ECONNRESET')
+                  //debug('check - promise rejected, error: '+err.message);
+          deferred.resolve(true);
+
+      else if (err.code !== 'ECONNREFUSED')
+          //debug('check - promise rejected, error: '+err.message);
+          deferred.reject(err);
+
+      //debug('check - promise resolved - not in use');
+      else deferred.resolve(false);
+
+      cleanUp();
     }
 
     client = new net.Socket();
@@ -147,7 +161,7 @@ function check(port, host) {
  */
 function waitForStatus(port, host, inUse, retryTimeMs, timeOutMs) {
 
-    var deferred = Q.defer();
+    var deferred = getDeferred();
     var timeoutId;
     var timedout = false;
     var retryId;
@@ -354,4 +368,3 @@ function waitUntilUsed(port, retryTimeMs, timeOutMs) {
 
     return waitUntilUsedOnHost(opts);
 }
-
