@@ -103,17 +103,21 @@ function check(port, host) {
     }
 
     function onErrorCb(err) {
-        if (err.code !== 'ECONNREFUSED') {
-            //debug('check - promise rejected, error: '+err.message);
-            deferred.reject(err);
-        } else {
-            //debug('ECONNREFUSED');
-            inUse = false;
-            //debug('check - promise resolved - not in use');
-            deferred.resolve(inUse);
-        }
-        cleanUp();
-    }
+       console.log('ERROR CODE:::', err.code);
+
+       if (err.code === 'ECONNRESET')
+           //debug('check - promise rejected, error: '+err.message);
+           deferred.resolve(true);
+
+       else if (err.code !== 'ECONNREFUSED')
+           //debug('check - promise rejected, error: '+err.message);
+           deferred.reject(err);
+
+       //debug('check - promise resolved - not in use');
+       else deferred.resolve(false);
+
+       cleanUp();
+   }
 
     client = new net.Socket();
     client.once('connect', onConnectCb);
