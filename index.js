@@ -115,17 +115,9 @@ function check(port, host) {
     }
 
     function onErrorCb(err) {
-      if (err.code === 'ECONNRESET')
-                  //debug('check - promise rejected, error: '+err.message);
-          deferred.resolve(true);
 
-      else if (err.code !== 'ECONNREFUSED')
-          //debug('check - promise rejected, error: '+err.message);
-          deferred.reject(err);
-
-      //debug('check - promise resolved - not in use');
-      else deferred.resolve(false);
-
+      if (['ECONNRESET','ECONNREFUSED'].indexOf(err.code) > -1) deferred.resolve(false);
+      else deferred.reject(err);
       cleanUp();
     }
 
